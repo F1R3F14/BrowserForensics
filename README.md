@@ -15,3 +15,6 @@ python BrowserForensics.py NAME_OF_HISTORY_FILE OUTPUT_NAME.csv
 OR
 
 BrowserForensics.exe NAME_OF_HISTORY_FILE OUTPUT_NAME.csv
+```
+
+Currently working to have this take numerous browsers all in one.
