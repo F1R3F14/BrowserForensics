@@ -18,3 +18,21 @@ BrowserForensics.exe NAME_OF_HISTORY_FILE OUTPUT_NAME.csv
 ```
 
 Currently working to have this take numerous browsers all in one.
+
+## Chrome History Location
+
+```bash
+C:\Users\<USERNAME>\AppData\Local\Google\Chrome\User Data\Default\History
+```
+
+## Edge History Location
+
+```bash
+C:\Users\<USERNAME>\AppData\Local\Microsoft\Edge\User Data\Default\History
+```
+
+## FireFox History Location
+
+```bash
+C:\Users\<USERNAME>\AppData\Roaming\Mozilla\Firefox\Profiles\<RANDOM>.default-release\places.sqlite
+```
