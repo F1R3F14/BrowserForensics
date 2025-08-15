@@ -2,12 +2,14 @@ import sqlite3
 import csv
 import os
 import sys
+import json
 from datetime import datetime
 
 # Chrome/Edge/Brave timestamp offset (microseconds since 1601-01-01 UTC)
 BROWSER_TIME_OFFSET_MICROSECONDS = 11644473600000000
 # Firefox timestamp offset (microseconds since Unix epoch 1970-01-01 UTC)
 FIREFOX_TIME_DIVISOR = 1_000_000
+
 
 def chrome_time_to_datetime(chrome_time):
     """Convert Chrome timestamp to formatted UTC datetime."""
@@ -21,6 +23,7 @@ def chrome_time_to_datetime(chrome_time):
             return None
     return None
 
+
 def firefox_time_to_datetime(firefox_time):
     """Convert Firefox timestamp (microseconds since Unix epoch) to formatted UTC datetime."""
     if firefox_time:
@@ -30,6 +33,7 @@ def firefox_time_to_datetime(firefox_time):
         except Exception:
             return None
     return None
+
 
 def detect_browser(cursor):
     """Detect DB type based on known tables."""
@@ -42,6 +46,7 @@ def detect_browser(cursor):
         return "firefox"
     else:
         return None
+
 
 def parse_chromium(cursor):
     """Extract history & downloads from Chromium-based DB."""
@@ -93,8 +98,9 @@ def parse_chromium(cursor):
 
     return results
 
+
 def parse_firefox(cursor):
-    """Extract history & downloads from Firefox DB."""
+    """Extract history & downloads from Firefox DB (old & modern)."""
     results = []
 
     # Browsing history
@@ -120,13 +126,10 @@ def parse_firefox(cursor):
     except sqlite3.Error:
         pass
 
-    # Downloads
+    # Old Firefox downloads table
     try:
-        query_downloads = """
-        SELECT target, startTime, totalBytes, source
-        FROM moz_downloads;
-        """
-        for target, start_time, total_bytes, source in cursor.execute(query_downloads):
+        cursor.execute("SELECT target, startTime, totalBytes, source FROM moz_downloads;")
+        for target, start_time, total_bytes, source in cursor.fetchall():
             results.append({
                 "Type": "Download",
                 "URL": source,
@@ -141,14 +144,54 @@ def parse_firefox(cursor):
     except sqlite3.Error:
         pass
 
+    # Modern Firefox downloads in moz_annos
+    try:
+        query_downloads_modern = """
+        SELECT
+            p.url AS source_url,
+            d_file.content AS target_path,
+            d_meta.content AS meta_json
+        FROM moz_places p
+        JOIN moz_annos d_file ON p.id = d_file.place_id
+        JOIN moz_anno_attributes a_file ON d_file.anno_attribute_id = a_file.id
+        LEFT JOIN moz_annos d_meta ON p.id = d_meta.place_id
+        LEFT JOIN moz_anno_attributes a_meta ON d_meta.anno_attribute_id = a_meta.id
+        WHERE a_file.name = 'downloads/destinationFileURI'
+          AND a_meta.name = 'downloads/metaData';
+        """
+        for source_url, target_path, meta_json in cursor.execute(query_downloads_modern):
+            total_bytes = ""
+            start_time = ""
+            if meta_json:
+                try:
+                    meta = json.loads(meta_json)
+                    total_bytes = meta.get("fileSize", "")
+                    start_time = meta.get("startTime", 0)
+                except Exception:
+                    pass
+
+            results.append({
+                "Type": "Download",
+                "URL": source_url,
+                "Title": "",
+                "Visit Count": "",
+                "Last Visit (UTC)": "",
+                "Visit Time (UTC)": firefox_time_to_datetime(start_time) if start_time else "",
+                "Download Path": target_path.replace("file://", "") if target_path else "",
+                "Download Size (bytes)": total_bytes,
+                "Referrer": ""
+            })
+    except sqlite3.Error:
+        pass
+
     return results
+
 
 def export_history(db_path, output_csv):
     if not os.path.exists(db_path):
         print(f"[!] History database not found: {db_path}")
         return
 
-    # Copy DB to avoid locks
     temp_db = "temp_history.db"
     with open(db_path, 'rb') as src, open(temp_db, 'wb') as dst:
         dst.write(src.read())
@@ -169,7 +212,6 @@ def export_history(db_path, output_csv):
     conn.close()
     os.remove(temp_db)
 
-    # Write to CSV
     if results:
         with open(output_csv, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=results[0].keys())
@@ -179,6 +221,7 @@ def export_history(db_path, output_csv):
         print(f"[+] Records exported: {len(results)}")
     else:
         print("[!] No history or download data found.")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
