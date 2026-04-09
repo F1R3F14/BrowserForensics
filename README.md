@@ -37,6 +37,8 @@ C:\Users\<USERNAME>\AppData\Local\Microsoft\Edge\User Data\Default\History
 C:\Users\<USERNAME>\AppData\Roaming\Mozilla\Firefox\Profiles\<RANDOM>.default-release\places.sqlite
 ```
 
+---
+
 #Check for Browser Syncing
 
 ##Chrome Sync Location
