@@ -39,9 +39,9 @@ C:\Users\<USERNAME>\AppData\Roaming\Mozilla\Firefox\Profiles\<RANDOM>.default-re
 
 ---
 
-#Check for Browser Syncing
+# Check for Browser Syncing
 
-##Chrome Sync Location
+## Chrome Sync Location
 
 ```bash
 C:\Users\<USER>\AppData\Local\Google\Chrome\User Data\Default\Preferences
