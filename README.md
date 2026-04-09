@@ -46,4 +46,18 @@ C:\Users\<USERNAME>\AppData\Roaming\Mozilla\Firefox\Profiles\<RANDOM>.default-re
 ```bash
 C:\Users\<USER>\AppData\Local\Google\Chrome\User Data\Default\Preferences
 ```
-Review for sycning enabled
+Review the Preferences json log for if sycning enabled
+
+## Firefox Sync Location
+
+```bash
+C:\Users\<USER>\AppData\Roaming\Mozilla\Firefox\Profiles\<profile>\prefs.js
+```
+Review the prefs.js log for if sycning enabled
+
+## Edge Sync Location
+
+```bash
+C:\Users\<USER>\AppData\Local\Microsoft\Edge\User Data\Default\
+```
+Review the Preferences json log for if sycning enabled
