@@ -36,3 +36,12 @@ C:\Users\<USERNAME>\AppData\Local\Microsoft\Edge\User Data\Default\History
 ```bash
 C:\Users\<USERNAME>\AppData\Roaming\Mozilla\Firefox\Profiles\<RANDOM>.default-release\places.sqlite
 ```
+
+#Check for Browser Syncing
+
+##Chrome Sync Location
+
+```bash
+C:\Users\<USER>\AppData\Local\Google\Chrome\User Data\Default\Preferences
+```
+Review for sycning enabled
