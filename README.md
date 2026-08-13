@@ -22,15 +22,15 @@ It extracts browsing data from SQLite databases and exports them into a **normal
 
 Run the tool with a history file as input:
 
-    python BrowserForensics.py <HISTORY_FILE> -o <OUTPUT.csv>
+    python BrowserForensics.py <HISTORY_FILE> <HISTORY2_FILE> -o <OUTPUT.csv>
 
 or using the compiled binary:
 
-    BrowserForensics.exe <HISTORY_FILE> -o <OUTPUT.csv>
+    BrowserForensics.exe <HISTORY_FILE> <HISTORY2_FILE> -o <OUTPUT.csv>
 
 ### Example
 
-    BrowserForensics.exe History Edge -o combined.csv
+    BrowserForensics.exe Chrome Edge -o combined.csv
 
 > Note: You can process multiple history files at the same time
 
